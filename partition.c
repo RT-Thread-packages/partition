@@ -51,7 +51,11 @@ static rt_err_t partition_close(rt_device_t dev)
     return RT_EOK;
 }
 
+#if RTTHREAD_VERSION >= 30000
 static rt_err_t partition_control(rt_device_t dev, rt_uint8_t cmd, void *args)
+#else
+static rt_err_t partition_control(rt_device_t dev, rt_uint8_t cmd, void *args)
+#endif
 {
     struct partition_device *part;
 
