@@ -114,6 +114,18 @@ static rt_size_t partition_write(rt_device_t dev,
     return 0;
 }
 
+#ifdef RT_USING_DEVICE_OPS
+const static struct rt_device_ops partition_dev_ops = 
+{
+    .init = partition_init,
+    .open = partition_open,
+    .close = partition_close,
+    .read = partition_read,
+    .write = partition_write,
+    .control = partition_control
+};
+#endif
+
 int rt_partition_init(const char* flash_device, const struct rt_partition* parts, rt_size_t num)
 {
     struct rt_device *device;
@@ -147,12 +159,16 @@ int rt_partition_init(const char* flash_device, const struct rt_partition* parts
 
             /* register device */
             part_dev->parent.type    = RT_Device_Class_Block;
+#ifdef RT_USING_DEVICE_OPS
+            part_dev->parent.ops = &partition_dev_ops;
+#else
             part_dev->parent.init    = partition_init;
             part_dev->parent.open    = partition_open;
             part_dev->parent.close   = partition_close;
             part_dev->parent.read    = partition_read;
             part_dev->parent.write   = partition_write;
             part_dev->parent.control = partition_control;
+#endif
             /* no private */
             part_dev->parent.user_data = RT_NULL;
 
